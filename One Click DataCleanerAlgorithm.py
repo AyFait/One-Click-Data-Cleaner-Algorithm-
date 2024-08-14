@@ -173,7 +173,7 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
 
     elif csvFile[col].dtype == float: #Might need fixing
         strCount, alphanumericCount, numCount, emptyCount, unknownCount = countObjsCol(workingCol)
-        if emptyCount >= 0.2 * len(workingCol): #Probably almost all cells are empty
+        if emptyCount >= 0.4 * len(workingCol): #Probably almost all cells are empty
             csvFile.drop(col, axis=1, inplace=True)
             #print(col)
         else:
