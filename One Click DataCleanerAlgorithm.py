@@ -2,12 +2,12 @@ import numpy as np
 import pandas as pd
 import re
 
-#Does not currently check for alphanumeric categorical vals -- it ses them as unknown
+#Domain knowledge of your dataset is highly recommended before using this algorithm 
 #Assumes that your csv file as a single row of defined header (starting point, first row)
 
-cleanedFilepath = '/home/a0x0bc1/Downloads/CleanedData.csv'
+cleanedFilepath = '/path/to//CleanedData.csv'#path to export your new file to
 #filepath = '/home/a0x0bc1/Downloads/CMC_24h_Gainers_Starting_07_10_24 mod.csv'
-filepath = '/home/a0x0bc1/Downloads/train.csv'
+filepath = '/path/to/input.csv'#your input csv file
 csvFile = pd.read_csv(filepath)
 print(csvFile.dtypes)#prints datatypes for each col
 print(type(csvFile))#prints <class 'pandas.core.frame.DataFrame'>
@@ -89,7 +89,7 @@ def isCategorical(workingCol):
         #return True
 
     #OR
-    if (numTwiceUniques / numUniks) >= 0.4:
+    if (numTwiceUniques / numUniks) >= 0.4:#you can adjust your threshold for a categorical col here
         return True
     
     else:
@@ -110,18 +110,18 @@ def mapCategorical(workingCol):
 def cleanObjNumericalCol(workingCol):
     numUniks = workingCol.nunique()
     numValues = sum(workingCol.isna() == False)
-    if isCategorical(workingCol):
+    if isCategorical(workingCol):#might be a categorical col
         return True
     elif numUniks >= 0.6 * numValues:#To check if the col is not categorical i.e. not repeated values
         for idx, elmt in enumerate(workingCol):#itrs over each elmt in a single col 
             if pd.isna(elmt): #skips an empty cell
                 continue
             elmt = re.sub('[^a-zA-Z0-9]+', '', elmt)#remove all other chars apart from alphas and nums
-            try:
-                floatelmt = float(elmt)
-            except:
-                csvFile.at[idx, col] = np.nan
-        #workingCol = pd.to_numeric(workingCol, errors='coerce')
+            #try:
+                #floatelmt = float(elmt)
+            #except:
+                #csvFile.at[idx, col] = np.nan
+        workingCol = pd.to_numeric(workingCol, errors='coerce')
         workingCol = fillNullCells(workingCol)
         return workingCol
     else:
@@ -133,6 +133,7 @@ def countObjsCol(workingCol):
     alphanumericCount = 0
     numCount = 0
     emptyCount = 0
+    unknownCount = 0
     #for elmt in csvFile[col]:#itrs over each elmt in a single col
     
     for idx, elmt in enumerate(workingCol):#itrs over each elmt in a single col 
@@ -144,7 +145,6 @@ def countObjsCol(workingCol):
             if elmt.isalpha():#Checks if each elmt is an alphabet
                 strCount += 1
                 #print(elmt)#prints the alphabetical elmt
-            
             else:
                 try: #To catch errors that will come from values other than numbers
                     floatnum = float(elmt)
@@ -157,8 +157,8 @@ def countObjsCol(workingCol):
                     continue #skip the value
                 
         except:
-            continue #skip the empty cel
-    return strCount, alphanumericCount, numCount, emptyCount
+            continue #skip
+    return strCount, alphanumericCount, numCount, emptyCount, unknownCount
 
 
 
@@ -172,7 +172,7 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
         continue
 
     elif csvFile[col].dtype == float: #Might need fixing
-        strCount, alphanumericCount, numCount, emptyCount = countObjsCol(workingCol)
+        strCount, alphanumericCount, numCount, emptyCount, unknownCount = countObjsCol(workingCol)
         if emptyCount >= 0.2 * len(workingCol): #Probably almost all cells are empty
             csvFile.drop(col, axis=1, inplace=True)
             #print(col)
@@ -182,7 +182,7 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
         
 
     elif workingCol.dtype == object: #Checks for each cols first
-        strCount, alphanumericCount, numCount, emptyCount = countObjsCol(workingCol)
+        strCount, alphanumericCount, numCount, emptyCount,  unknownCount = countObjsCol(workingCol)
         values = strCount + alphanumericCount + numCount
         
         #print(col)
@@ -191,9 +191,9 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
         #print('Nums: ', numCount)
         #print('EmptyCells: ', emptyCount)
         
-        if numCount >= (0.8 * values):#Incase a numerical col is mixed with few alphabets
+        if numCount >= (0.8 * values):#Incase a numerical col is mixed with few other chars
             #print(workingCol)
-            if cleanObjNumericalCol(csvFile[col]) is True:
+            if cleanObjNumericalCol(csvFile[col]) is True:#means it's categorica. Can use if isCategorical(csvFile[col]) directly 
                 #print(col)
                 csvFile[col] = mapCategorical(csvFile[col])
 
