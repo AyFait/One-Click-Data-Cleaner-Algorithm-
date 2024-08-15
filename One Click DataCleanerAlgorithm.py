@@ -163,20 +163,25 @@ def countObjsCol(workingCol):
 
 
 #Main Operation
+newCols = []
+deletedCols = []
 for col in csvFile.columns:#itrs over all cols at once, but a single col with index def
     #pass
     #print(csvFile[col]) #Prints the current col
     workingCol = csvFile[col]
 
     if csvFile[col].dtype == int: #Its perfect
+        newCols.append(col)
         continue
 
     elif csvFile[col].dtype == float: #Might need fixing
         strCount, alphanumericCount, numCount, emptyCount, unknownCount = countObjsCol(workingCol)
         if emptyCount >= 0.4 * len(workingCol): #Probably almost all cells are empty
+            deletedCols.append(col)
             csvFile.drop(col, axis=1, inplace=True)
             #print(col)
         else:
+            newCols.append(col)
             csvFile[col] = fillNullCells(csvFile[col])
             #print(csvFile[col])
         
@@ -195,11 +200,14 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
             #print(workingCol)
             if cleanObjNumericalCol(csvFile[col]) is True:#means it's categorica. Can use if isCategorical(csvFile[col]) directly 
                 #print(col)
+                newCols.append(col)
                 csvFile[col] = mapCategorical(csvFile[col])
 
             elif cleanObjNumericalCol(csvFile[col]) is None:
+                deletedCols.append(col)
                 csvFile.drop(col, axis=1, inplace=True)
             else:
+                newCols.append(col)
                 csvFile[col] = cleanObjNumericalCol(csvFile[col])#Num col with some empty cells
                 #print(csvFile[col])
 
@@ -207,20 +215,30 @@ for col in csvFile.columns:#itrs over all cols at once, but a single col with in
         elif (strCount + alphanumericCount + numCount) >= (0.6 * len(workingCol)): #This ratio means cols is likely mixed up with invalid data
             #To determine for Categorical col and then map
             if isCategorical(csvFile[col]) is None:
+                deletedCols.append(col)
                 csvFile.drop(col, axis=1, inplace=True)#Means its not categorical so delete col
-            else: 
+            else:
+                newCols.append(col)
                 csvFile[col] = mapCategorical(csvFile[col])
                 #print(csvFile[col])
                 #print(col)#col name
 
         else:
+            deletedCols.append(col)
             #print(workingCol)
             csvFile.drop(col, axis=1, inplace=True)#Means its not categorical so delete col
             
     else:
+        deletedCols.append(col)
         csvFile.drop(col, axis=1, inplace=True)#Del any other col
 
 print(csvFile.dtypes)
-
+print()
 csvFile.to_csv(cleanedFilepath, index=False)
+noOutputCols = len(csvFile.columns)
+removedCols = noInputCols - noOutputCols
+print(f'Total of {noOutputCols} output cols: {newCols}')
+print()
+print(f'Total of {removedCols} cols removed: {deletedCols}')
+print()
 print('Cleaned Data Exported Successfully')
