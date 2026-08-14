@@ -4,8 +4,8 @@
 ## Domain knowledge of your dataset is highly recommended before using this algorithm 
 ## Assumes that your csv file as a single row of defined header (starting point, first row)
 
-**Scope:**
-**Structure**
+- **Scope:**
+- **Structure:**
 
 
 
