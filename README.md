@@ -13,7 +13,7 @@
 
 ---
 ### Structure:
-- **Fills empty cells using INTERPOLATION**
+- **Fills empty cells using interpolation**
 - **Detects categorical columns**
 - **Maps non-numerical elements to numbers**
 - **Detects alpha-numerical/object-numerical cells**
