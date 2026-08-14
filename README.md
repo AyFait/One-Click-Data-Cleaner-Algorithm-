@@ -1,4 +1,4 @@
-# One Click Data Cleaner Algorithm (DCA)
+# One Click Data Cleaner Algorithm (DCA)[^1]
 
 > This code is meant to do your first job for you, if you're about to work on a data processing or analysis task.
 
@@ -39,4 +39,4 @@
 
 
 
-[^1] More than 85% of this program was hand-written by me in 2024, I'll give about 13% to "why is this part not working as expected?" prompts on ChatGPT, and about 2% of ChatGPT writing whole blocks!
+[^1]: More than 85% of this program was hand-written by me in 2024, I'll give about 13% to "why is this part not working as expected?" prompts on ChatGPT, and about 2% of ChatGPT writing whole blocks!
