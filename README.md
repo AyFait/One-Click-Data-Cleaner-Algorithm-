@@ -3,7 +3,7 @@
 > This code is meant to do your first job for you, if you're about to work on a data processing or analysis task.
 
 ## Domain knowledge of your dataset is highly recommended before using this algorithm 
-## Assumes that your csv file as a single row of defined header/title (starting point, first row)
+## Assumes that your .CSV[^2] file as a single row of defined header/title (starting point, first row)
 
 ---
 ### Scope: 
@@ -40,3 +40,4 @@
 
 
 [^1]: More than 85% of this program was hand-written by me in 2024, I'll give about 13% to "why is this part not working as expected?" prompts on ChatGPT, and about 2% of ChatGPT writing whole blocks!
+[^2]: Only supports .csv files
